@@ -1,0 +1,13 @@
+{
+    "manifest_version":3,
+    "name":"Dimension Checker",
+    "version":"1.0",
+    "description":"Automatically checks Cargo releases in order to find non-rackeable or extradimension pieces and marks them.",
+    "permissions":["tabs", "activeTab", "scripting"],
+    "action":{
+        "default_icon":{}
+    },
+    "background": {
+        "service_worker": "background.js"
+    }
+}
