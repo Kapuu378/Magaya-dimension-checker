@@ -1,26 +1,15 @@
-function captureRows(){
+function validateRow(row){
     const regex = /^\dW\d{6}/;
-    let all = document.getElementsByTagName("table")
-    
-    let validRows = []
-    for(i=0; i < all.length; i++){
-        let elem = all[i]
-        if (
-            regex.test(elem.textContent)
-        ){
-            validRows.push(elem)
-        }
-    }
+    return regex.test(row.textContent)
+}
+
+function captureRows(){
+    let all = Array.from(document.getElementsByTagName("table"))
+    let validRows = all.filter(validateRow)
     return validRows
 }
 
 let results = captureRows()
-
-/*for(i=0; i < results.length; i++){
-    results[i].style.backgroundColor = "red";
-};*/
-
-console.log(results[0])
 
 class CargoReleaseRow{
     constructor(
@@ -36,8 +25,6 @@ class CargoReleaseRow{
         this.weight = this.parseWeight(this.weightContent)
         this.isNonRack = this.checkNonRack()
         this.isExtradimension = this.checkExtraDim()
-
-        //etc...
     }
 
     getPieces(DOMRefer){
@@ -79,7 +66,6 @@ class CargoReleaseRow{
 
     checkNonRack(){
         if (this.large >= 92 || this.width >= 92 || this.height >= 84){
-            //this.DOMRefer.childNodes[0].childNodes[0].childNodes[0].textContent += "NON RACK \n"
             return true
         }
         else {
@@ -89,7 +75,6 @@ class CargoReleaseRow{
 
     checkExtraDim(){
         if (this.large >= 144 || this.width >= 144 || this.height >= 144){
-            //this.DOMRefer.childNodes[0].childNodes[0].childNodes[0].textContent += "EXTRADIM \n"
             return true
         } else {
             return false
