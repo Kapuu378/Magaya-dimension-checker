@@ -78,20 +78,42 @@ class CargoRelease{
     constructor(){
         this.rows = this.getCargoReleaseRows()
         this.cargoReleaseDate = this.getCargoReleaseDate()
+        this.setNonRackMarks()
+        this.setExtradimension()
     }
 
     getCargoReleaseRows(){
         let all = Array.from(document.getElementsByTagName("table"))
         let validRows = all.filter(validateRow)
-        return validRows
+        let crRows = validRows.map(x => new CargoReleaseRow(x))
+        return crRows
     }
 
     getCargoReleaseDate(){
         let dateContent = document.querySelector('body > table > tbody > tr:nth-child(1) > td > table > tbody > tr > td > div > table:nth-child(1) > tbody > tr:nth-child(3) > td:nth-child(2) > div').textContent
         return new Date(dateContent);
     }
-}
 
+    setNonRackMarks(){
+        for(let i = 0; i < this.rows.length; i++){
+            let row = this.rows[i]
+            if (row.isNonRack){
+                row.DOMRefer.childNodes[0].childNodes[0].childNodes[0].innerHTML += '<span style="font-weight: bold; color: green;">Non Rack</span> \n'
+                row.DOMRefer.style.backgroundColor = "#e6f9e6";
+            }
+        }
+    }
+
+    setExtradimension(){
+        for(let i = 0; i < this.rows.length; i++){
+            let row = this.rows[i]
+            if (row.isExtradimension){
+                row.DOMRefer.childNodes[0].childNodes[0].childNodes[0].innerHTML += '<span style="font-weight: bold; color: red;">Extradim</span> \n'
+                row.DOMRefer.style.backgroundColor = "#e6f9e6";
+            }
+        }
+    }
+}
 
 let results = new CargoRelease
 console.log(results)
