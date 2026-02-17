@@ -3,6 +3,23 @@ function validateRow(row){
     return regex.test(row.textContent)
 }
 
+function parseDate(date){
+    let parsedDate;
+        try{
+            parsedDate = new Date(date);
+            if (parsedDate == "Invalid Date"){
+                throw new Error()
+            }
+        }
+        catch{
+            // Usually the wrong format on this page follows this schema: en|20xx-xx-xx
+            let loadingDateString = date.split("|")[1]
+            parsedDate = new Date(loadingDateString);   
+        }
+        parsedDate.setHours(0, 0, 0, 0)
+        return parsedDate;
+}
+
 class CargoReleaseRow{
     constructor(
         DOMRefer
@@ -112,8 +129,8 @@ class CargoRelease{
     }
 
     getCargoReleaseDate(){
-        let dateContent = document.querySelector('body > table > tbody > tr:nth-child(1) > td > table > tbody > tr > td > div > table:nth-child(1) > tbody > tr:nth-child(3) > td:nth-child(2) > div').textContent
-        return new Date(dateContent);
+        let dateContent = document.querySelector('body > table > tbody > tr:nth-child(1) > td > table > tbody > tr > td > div > table:nth-child(1) > tbody > tr:nth-child(3) > td:nth-child(2) > div').textContent;
+        return parseDate(dateContent)
     }
 
     getWarehouseArrivals(){
@@ -157,7 +174,7 @@ class CargoRelease{
             let warehouseNum = row.warehouse
             let match = this.warehouseArrivals.find(e => e.textContent.includes(warehouseNum))
             if (match){
-                row.arrivalDate = new Date(match.childNodes[0].textContent)
+                row.arrivalDate = parseDate(match.childNodes[0].textContent)
             }
         }
     }
