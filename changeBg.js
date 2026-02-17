@@ -8,6 +8,7 @@ class CargoReleaseRow{
         DOMRefer
     ){
         this.DOMRefer = DOMRefer;
+        this.fatherCR = null
         this.pieces = this.getPieces(this.DOMRefer);
         this.warehouse = this.getWarehouse(this.DOMRefer);
         this.dimensionsContent = this.getDimensionsContent(this.DOMRefer);
@@ -17,6 +18,11 @@ class CargoReleaseRow{
         this.weight = this.parseWeight(this.weightContent)
         this.isNonRack = this.checkNonRack()
         this.isExtradimension = this.checkExtraDim()
+        this.daysDiff = null
+    }
+
+    __setFather__(father){
+        this.fatherCR = father
     }
 
     getPieces(DOMRefer){
@@ -72,14 +78,30 @@ class CargoReleaseRow{
             return false
         }
     }
+
+    caculateDaysDiff(){
+        this.daysDiff = Math.ceil((this.fatherCR.cargoReleaseDate - this.arrivalDate) / (1000 * 60 * 60 * 24))
+    }
 }
 
 class CargoRelease{
     constructor(){
         this.rows = this.getCargoReleaseRows()
         this.cargoReleaseDate = this.getCargoReleaseDate()
-        this.setNonRackMarks()
-        this.setExtradimension()
+        this.warehouseArrivals = this.getWarehouseArrivals()
+        this.setArrivalToWarehouse = this.setArrivalToWarehouse()
+        this.markNonRack()
+        this.markExtradimension()
+
+        // Sets a reference to this object onto every CR Row.
+        this.setReferenceToRows()
+
+        // Calculate days diff
+        this.calculateAllDaysDiff()
+    }
+
+    setReferenceToRows(){
+        this.rows.map(r => r.__setFather__(this))
     }
 
     getCargoReleaseRows(){
@@ -94,7 +116,13 @@ class CargoRelease{
         return new Date(dateContent);
     }
 
-    setNonRackMarks(){
+    getWarehouseArrivals(){
+        let all = document.querySelectorAll("tr")
+        console.log(all)
+        return Array.from(all).filter(e => e.textContent.includes("Cargo Arrived at Warehouse") && e.childNodes.length == 5)
+    }
+
+    markNonRack(){
         for(let i = 0; i < this.rows.length; i++){
             let row = this.rows[i]
             if (row.isNonRack){
@@ -104,7 +132,7 @@ class CargoRelease{
         }
     }
 
-    setExtradimension(){
+    markExtradimension(){
         for(let i = 0; i < this.rows.length; i++){
             let row = this.rows[i]
             if (row.isExtradimension){
@@ -113,28 +141,35 @@ class CargoRelease{
             }
         }
     }
+
+    markDaysDiff(){
+        for(let i = 0; i < this.rows.length; i++){
+            let row = this.rows[i]
+            if (row.daysDiff){
+                row.DOMRefer.childNodes[0].childNodes[0].childNodes[4].innerHTML += `<span style="font-weight: bold; color: black;">${row.daysDiff}</span> \n`
+            }
+        }
+    }
+
+    setArrivalToWarehouse(){
+        for(let i = 0; i < this.rows.length; i++){
+            let row = this.rows[i]
+            let warehouseNum = row.warehouse
+            let match = this.warehouseArrivals.find(e => e.textContent.includes(warehouseNum))
+            if (match){
+                row.arrivalDate = new Date(match.childNodes[0].textContent)
+            }
+        }
+    }
+
+    calculateAllDaysDiff(){
+        this.rows.map(r => r.caculateDaysDiff())
+    }
 }
 
-let results = new CargoRelease
-console.log(results)
-let crr;
-
-/*function addMarks(cargoReleaseRow){
-
-    if (cargoReleaseRow.isNonRack){
-        cargoReleaseRow.DOMRefer.childNodes[0].childNodes[0].childNodes[0].innerHTML += '<span style="font-weight: bold; color: green;">Non Rack</span> \n'
-        cargoReleaseRow.DOMRefer.style.backgroundColor = "#e6f9e6";
-    }
-    if (cargoReleaseRow.isExtradimension){
-        cargoReleaseRow.DOMRefer.childNodes[0].childNodes[0].childNodes[0].innerHTML += '<span style="font-weight: bold; color: red;">Extradim</span> \n'
-    }
-}
-
-for(i=0; i < results.length; i++){
-    crr = new CargoReleaseRow(results[i])
-    addMarks(crr)
-    console.log(crr)
-};*/
+let CR = new CargoRelease
+console.log(CR)
+CR.markDaysDiff()
 
 
 
