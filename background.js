@@ -1,8 +1,14 @@
 chrome.action.onClicked.addListener((tab) => {
-    if (tab.url) {
-        chrome.scripting.executeScript({
-        target: {tabId: tab.id},
-        files: ["changeBg.js"]
-        })
-    }
-});
+    chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
+    if (changeInfo.status === "complete") {
+            if (tab.url) {
+                chrome.scripting.executeScript({
+                target: {tabId: tab.id},
+                files: ["changeBg.js"]
+                })
+            }
+        }
+    });
+
+
+})
