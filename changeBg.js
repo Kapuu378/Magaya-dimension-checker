@@ -34,6 +34,9 @@ class CargoReleaseRow{
         this.weightContent = this.getWeightContent(this.DOMRefer)
         this.weightUnit = this.getWeightUnits(this.weightContent)
         this.weight = this.parseWeight(this.weightContent)
+        this.isNonRack = this.checkNonRack()
+        this.isExtradimension = this.checkExtraDim()
+
         //etc...
     }
 
@@ -76,23 +79,40 @@ class CargoReleaseRow{
 
     checkNonRack(){
         if (this.large >= 92 || this.width >= 92 || this.height >= 84){
-            this.DOMRefer.childNodes[0].childNodes[0].childNodes[0].textContent += "NON RACK \n"
+            //this.DOMRefer.childNodes[0].childNodes[0].childNodes[0].textContent += "NON RACK \n"
+            return true
+        }
+        else {
+            return false
         }
     }
 
     checkExtraDim(){
         if (this.large >= 144 || this.width >= 144 || this.height >= 144){
-            this.DOMRefer.childNodes[0].childNodes[0].childNodes[0].textContent += "EXTRADIM \n"
+            //this.DOMRefer.childNodes[0].childNodes[0].childNodes[0].textContent += "EXTRADIM \n"
+            return true
+        } else {
+            return false
         }
     }
 }
 
 let crr;
 
+function addMarks(cargoReleaseRow){
+
+    if (cargoReleaseRow.isNonRack){
+        cargoReleaseRow.DOMRefer.childNodes[0].childNodes[0].childNodes[0].innerHTML += '<span style="font-weight: bold; color: green;">Non Rack</span> \n'
+        cargoReleaseRow.DOMRefer.style.backgroundColor = "#e6f9e6";
+    }
+    if (cargoReleaseRow.isExtradimension){
+        cargoReleaseRow.DOMRefer.childNodes[0].childNodes[0].childNodes[0].innerHTML += '<span style="font-weight: bold; color: red;">Extradim</span> \n'
+    }
+}
+
 for(i=0; i < results.length; i++){
     crr = new CargoReleaseRow(results[i])
-    crr.checkNonRack()
-    crr.checkExtraDim()
+    addMarks(crr)
     console.log(crr)
 };
 
