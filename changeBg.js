@@ -3,14 +3,6 @@ function validateRow(row){
     return regex.test(row.textContent)
 }
 
-function captureRows(){
-    let all = Array.from(document.getElementsByTagName("table"))
-    let validRows = all.filter(validateRow)
-    return validRows
-}
-
-let results = captureRows()
-
 class CargoReleaseRow{
     constructor(
         DOMRefer
@@ -82,9 +74,30 @@ class CargoReleaseRow{
     }
 }
 
+class CargoRelease{
+    constructor(){
+        this.rows = this.getCargoReleaseRows()
+        this.cargoReleaseDate = this.getCargoReleaseDate()
+    }
+
+    getCargoReleaseRows(){
+        let all = Array.from(document.getElementsByTagName("table"))
+        let validRows = all.filter(validateRow)
+        return validRows
+    }
+
+    getCargoReleaseDate(){
+        let dateContent = document.querySelector('body > table > tbody > tr:nth-child(1) > td > table > tbody > tr > td > div > table:nth-child(1) > tbody > tr:nth-child(3) > td:nth-child(2) > div').textContent
+        return new Date(dateContent);
+    }
+}
+
+
+let results = new CargoRelease
+console.log(results)
 let crr;
 
-function addMarks(cargoReleaseRow){
+/*function addMarks(cargoReleaseRow){
 
     if (cargoReleaseRow.isNonRack){
         cargoReleaseRow.DOMRefer.childNodes[0].childNodes[0].childNodes[0].innerHTML += '<span style="font-weight: bold; color: green;">Non Rack</span> \n'
@@ -99,7 +112,7 @@ for(i=0; i < results.length; i++){
     crr = new CargoReleaseRow(results[i])
     addMarks(crr)
     console.log(crr)
-};
+};*/
 
 
 
