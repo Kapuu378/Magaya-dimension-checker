@@ -80,7 +80,7 @@ class CargoReleaseRow{
     }
 
     checkNonRack(){
-        if (this.large >= 92 || this.width >= 92 || this.height >= 84){
+        if (this.large > 92 || this.width > 92 || this.height > 84){
             return true
         }
         else {
