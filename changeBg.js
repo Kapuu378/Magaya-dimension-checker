@@ -139,12 +139,16 @@ class CargoRelease{
         return Array.from(all).filter(e => e.textContent.includes("Cargo Arrived at Warehouse") && e.childNodes.length == 5)
     }
 
-    markNonRack(){
+    markNonRack(){        
         for(let i = 0; i < this.rows.length; i++){
             let row = this.rows[i]
             if (row.isNonRack){
                 row.DOMRefer.childNodes[0].childNodes[0].childNodes[0].innerHTML += '<span style="font-weight: bold; color: green;">Non Rack</span> \n'
                 row.DOMRefer.style.backgroundColor = "#e6f9e6";
+                row.DOMRefer.scrollIntoView({
+                    behavior:"smooth",
+                    block:"center"
+                });
             }
         }
     }
