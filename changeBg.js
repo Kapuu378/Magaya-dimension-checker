@@ -33,8 +33,11 @@ class CargoReleaseRow{
         this.weightContent = this.getWeightContent(this.DOMRefer)
         this.weightUnit = this.getWeightUnits(this.weightContent)
         this.weight = this.parseWeight(this.weightContent)
+        this.weightDivider = this.getWeightDivider()
+        this.weightPerPiece = this.getWeightPerPiece()
         this.isNonRack = this.checkNonRack()
         this.isExtradimension = this.checkExtraDim()
+        this.isOverweight = this.checkOverweight()
         this.daysDiff = null
     }
 
@@ -68,6 +71,21 @@ class CargoReleaseRow{
         return null;
     }
 
+    getWeightDivider(){
+        if (this.weightUnit == 'kg'){
+            return 2267
+        }
+        else if (this.weightUnit == 'lb'){
+            return 5000
+        }
+    }
+
+    getWeightPerPiece(){
+        let wpp = this.weight / this.pieces
+        console.log(wpp)
+        return wpp
+    }
+
     parseWeight(weightContent){
         return Number(weightContent.split(this.weightUnit)[0])
     }
@@ -92,6 +110,15 @@ class CargoReleaseRow{
         if (this.large >= 144 || this.width >= 144 || this.height >= 144){
             return true
         } else {
+            return false
+        }
+    }
+
+    checkOverweight(){
+        if ((this.weightPerPiece / this.weightDivider) > 1){
+            return true
+        }
+        else{
             return false
         }
     }
@@ -158,6 +185,16 @@ class CargoRelease{
             let row = this.rows[i]
             if (row.isExtradimension){
                 row.DOMRefer.childNodes[0].childNodes[0].childNodes[0].innerHTML += '<span style="font-weight: bold; color: red;">Extradim</span> \n'
+                row.DOMRefer.style.backgroundColor = "#e6f9e6";
+            }
+        }
+    }
+
+    markOverweight(){
+        for(let i = 0; i < this.rows.length; i++){
+            let row = this.rows[i]
+            if (row.isOverweight){
+                row.DOMRefer.childNodes[0].childNodes[0].childNodes[0].innerHTML += '<span style="font-weight: bold; color: purple;">Overweight</span> \n'
                 row.DOMRefer.style.backgroundColor = "#e6f9e6";
             }
         }
